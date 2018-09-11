@@ -1,0 +1,180 @@
+﻿@{
+    ViewBag.Title = "Worker";
+}
+
+<div class="panel panel-default" style="margin-top: 20px;">
+    <div class="panel-heading">
+        <h3 class="panel-title">Command Line</h3>
+    </div>
+    <div class="panel-body">
+        <div class="input-group">
+            <input type="text" id="command" class="form-control">
+            <span class="input-group-btn">
+                <button type="button" id="execute" class="btn btn-default">Execute</button>
+            </span>
+        </div>
+
+        <div id="output">&nbsp;</div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Tasks</h3>
+    </div>
+    <div class="panel-body">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="no-email"> No Email (daily and monthly tasks only)
+            </label>
+        </div>
+        <button type="button" id="task-5min" class="btn btn-default" style="width: 200px;" data-command="RunTask" data-args="5min">Five Minute Task</button>
+        <button type="button" id="task-daily" class="btn btn-default" style="width: 200px;" data-command="RunTask" data-args="daily {no-email}">Daily Task</button>
+        <button type="button" id="task-daily" class="btn btn-default" style="width: 200px;" data-command="RunTask" data-args="monthly {no-email}">Monthly Task</button>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Billing</h3>
+    </div>
+    <div class="panel-body">
+
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="billing-period">Period</label>
+                <div class="col-sm-2">
+                    <input type="text" id="billing-period" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="billing-client-id">ClientID</label>
+                <div class="col-sm-2">
+                    <input type="text" id="billing-client-id" class="form-control" />
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <label>Billing Categories:</label>
+        <label class="checkbox-inline">
+            <input type="checkbox" class="billing-category" value="tool"> Tool
+        </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" class="billing-category" value="room"> Room
+        </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" class="billing-category" value="store"> Store
+        </label>
+
+        <div>
+            <button type="button" id="tool-data-clean" class="btn btn-default" style="width: 200px;" data-command="UpdateBilling" data-args="{billing-period} {billing-client-id} {billing-categories}" data-require="billing-period,billing-categories">Update Billing</button>
+        </div>
+
+        <hr />
+
+        <button type="button" id="tool-data-clean" class="btn btn-default" style="width: 200px;" data-command="UpdateToolDataClean" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Tool Data Clean</button>
+        <button type="button" id="room-data-clean" class="btn btn-default" style="width: 200px;" data-command="UpdateRoomDataClean" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Room Data Clean</button>
+        <button type="button" id="store-data-clean" class="btn btn-default" style="width: 200px;" data-command="UpdateStoreDataClean" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Store Data Clean</button>
+
+        <hr />
+
+        <button type="button" id="tool-data" class="btn btn-default" style="width: 200px;" data-command="UpdateToolData" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Tool Data</button>
+        <button type="button" id="room-data" class="btn btn-default" style="width: 200px;" data-command="UpdateRoomData" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Room Data</button>
+        <button type="button" id="store-data" class="btn btn-default" style="width: 200px;" data-command="UpdateStoreData" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Store Data</button>
+
+        <hr />
+
+        <button type="button" id="tool-billing" class="btn btn-default" style="width: 200px;" data-command="UpdateToolBilling" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Tool Billing</button>
+        <button type="button" id="room-billing" class="btn btn-default" style="width: 200px;" data-command="UpdateRoomBilling" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Room Billing</button>
+        <button type="button" id="store-billing" class="btn btn-default" style="width: 200px;" data-command="UpdateStoreBilling" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Store Billing</button>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $("#execute").on("click", function (e) {
+            if ($("#command").val()) {
+                var parts = $("#command").val().split(' ');
+
+                var command = "";
+                var args = [];
+
+                if (parts.length > 0)
+                    command = parts[0];
+                else
+                    command = parts;
+
+                if (parts.length > 1)
+                    args = parts.slice(1);
+
+                execute(command, args);
+            }
+        });
+        
+        $("[data-command]").on("click", function (e) {
+            var command = $(this).data("command");
+
+            var parameters = {
+                "no-email": { "label": "No Email", "value": $("#no-email").prop("checked") },
+                "billing-period": { "label": "Period", "value": $("#billing-period").val() },
+                "billing-client-id": { "label": "ClientID", "value": $("#billing-client-id").val() || 0 },
+                "billing-categories": { "label": "Billing Categories", "value": getBillingCategories().join(",") }
+            };
+
+            var require = [];
+            var missing = [];
+
+            if ($(this).data("require"))
+                require = $(this).data("require").split(',');
+
+            if (require.length > 0) {
+                $.each(require, function (i, val) {
+                    if (parameters[val].value === null || parameters[val].value === "")
+                        missing.push(val);
+                });
+            }
+
+            if (missing.length == 0) {
+                var args = $(this).data("args")
+                    .replace("{no-email}", parameters["no-email"].value)
+                    .replace("{billing-period}", parameters["billing-period"].value)
+                    .replace("{billing-client-id}", parameters["billing-client-id"].value)
+                    .replace("{billing-categories}", parameters["billing-categories"].value);
+
+                $("#command").val(command + " " + args);
+
+                execute(command, args.split(' '));
+            } else {
+                var params = $.map(missing, function (x) { return parameters[x].label }).join(", ");
+                $("#output").html(getAlert("Missing parameters: " + params, "danger"))
+            }
+        });
+
+        function getBillingCategories() {
+            return $.map($(".billing-category:checked"), function (val, i) {
+                return $(val).val();
+            });
+        }
+
+        function getAlert(msg, type) {
+            return $("<div/>", { "class": "alert alert-" + type, "role": "alert" }).css({ "margin": "10px 0 0 0" }).html(msg);
+        }
+
+        function execute(command, args) {
+            $.ajax({
+                "url": '@Url.Content("~/api/execute")',
+                "method": "POST",
+                "data": { "Command": command, "Args": args }
+            }).done(function (data, textStatus, jqXHR) {
+                $("#output").html(getAlert(data, "success"))
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                var err = jqXHR.responseJSON
+                    ? jqXHR.responseJSON.ExceptionMessage
+                    : "A server error occurred.";
+                $("#output").html(getAlert(err, "danger"))
+            });
+        }
+    </script>
+}
