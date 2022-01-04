@@ -2,6 +2,45 @@
     ViewBag.Title = "Worker";
 }
 
+@section styles{
+    <style>
+        #console {
+            height: 300px;
+            background-color: #000;
+            white-space: pre;
+            overflow: auto;
+            font-family: 'Courier New';
+            color: #fff;
+        }
+
+        @@media (min-width: 992px) {
+            .equal {
+                display: -ms-flexbox;
+                display: -webkit-flex;
+                display: flex;
+            }
+        }
+
+        .panel {
+            width: 100%;
+            height: 100%;
+        }
+
+        .compact .form-group {
+            margin-bottom: 5px;
+        }
+
+        .compact hr {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .worker-btn {
+            width: 120px;
+        }
+    </style>
+}
+
 <div class="panel panel-default" style="margin-top: 20px;">
     <div class="panel-heading">
         <h3 class="panel-title">Command Line</h3>
@@ -15,84 +54,125 @@
         </div>
 
         <div id="output">&nbsp;</div>
+
+        <pre id="console"></pre>
     </div>
 </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Tasks</h3>
-    </div>
-    <div class="panel-body">
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" id="no-email"> No Email (daily and monthly tasks only)
-            </label>
-        </div>
-        <button type="button" id="task-5min" class="btn btn-default" style="width: 200px;" data-command="RunTask" data-args="5min">Five Minute Task</button>
-        <button type="button" id="task-daily" class="btn btn-default" style="width: 200px;" data-command="RunTask" data-args="daily {no-email}">Daily Task</button>
-        <button type="button" id="task-daily" class="btn btn-default" style="width: 200px;" data-command="RunTask" data-args="monthly {no-email}">Monthly Task</button>
-    </div>
-</div>
-
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Billing</h3>
-    </div>
-    <div class="panel-body">
-
-        <div class="form-horizontal">
-            <div class="form-group">
-                <label class="control-label col-sm-1" for="billing-period">Period</label>
-                <div class="col-sm-2">
-                    <input type="text" id="billing-period" class="form-control" />
-                </div>
+<div class="row equal">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Tasks</h3>
             </div>
-            <div class="form-group">
-                <label class="control-label col-sm-1" for="billing-client-id">ClientID</label>
-                <div class="col-sm-2">
-                    <input type="text" id="billing-client-id" class="form-control" />
+            <div class="panel-body">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="no-email"> No Email (daily and monthly tasks only)
+                    </label>
                 </div>
+                <div style="margin-top: 5px;"><button type="button" id="task-5min" class="btn btn-default btn-sm worker-btn" data-command="RunTask" data-args="5min">Five Minute Task</button></div>
+                <div style="margin-top: 5px;"><button type="button" id="task-daily" class="btn btn-default btn-sm worker-btn" data-command="RunTask" data-args="daily {no-email}">Daily Task</button></div>
+                <div style="margin-top: 5px;"><button type="button" id="task-daily" class="btn btn-default btn-sm worker-btn" data-command="RunTask" data-args="monthly {no-email}">Monthly Task</button></div>
+                <hr />
+                <button type="button" class="btn btn-default btn-sm worker-btn" data-command="Poke" data-args="">Poke</button>
             </div>
         </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Billing</h3>
+            </div>
+            <div class="panel-body compact">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="billing-period">Period</label>
+                        <div class="col-sm-5">
+                            <input type="text" id="billing-period" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="billing-client-id">ClientID</label>
+                        <div class="col-sm-5">
+                            <input type="text" id="billing-client-id" class="form-control" />
+                        </div>
+                    </div>
+                </div>
 
-        <hr />
+                <hr />
 
-        <label>Billing Categories:</label>
-        <label class="checkbox-inline">
-            <input type="checkbox" class="billing-category" value="tool"> Tool
-        </label>
-        <label class="checkbox-inline">
-            <input type="checkbox" class="billing-category" value="room"> Room
-        </label>
-        <label class="checkbox-inline">
-            <input type="checkbox" class="billing-category" value="store"> Store
-        </label>
+                <label>Billing Categories:</label>
+                <label class="checkbox-inline">
+                    <input type="checkbox" class="billing-category" value="tool"> Tool
+                </label>
+                <label class="checkbox-inline">
+                    <input type="checkbox" class="billing-category" value="room"> Room
+                </label>
+                <label class="checkbox-inline">
+                    <input type="checkbox" class="billing-category" value="store"> Store
+                </label>
 
-        <div>
-            <button type="button" id="tool-data-clean" class="btn btn-default" style="width: 200px;" data-command="UpdateBilling" data-args="{billing-period} {billing-client-id} {billing-categories}" data-require="billing-period,billing-categories">Update Billing</button>
+                <div>
+                    <button type="button" id="tool-data-clean" class="btn btn-default btn-sm worker-btn" data-command="UpdateBilling" data-args="{billing-period} {billing-client-id} {billing-categories}" data-require="billing-period,billing-categories">Update Billing</button>
+                </div>
+
+                <hr />
+
+                <div>
+                    <button type="button" id="tool-data-clean" class="btn btn-default btn-sm worker-btn" data-command="UpdateToolDataClean" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Tool Data Clean</button>
+                    <button type="button" id="room-data-clean" class="btn btn-default btn-sm worker-btn" data-command="UpdateRoomDataClean" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Room Data Clean</button>
+                    <button type="button" id="store-data-clean" class="btn btn-default btn-sm worker-btn" data-command="UpdateStoreDataClean" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Store Data Clean</button>
+                </div>
+
+                <div style="margin-top: 5px;">
+                    <button type="button" id="tool-data" class="btn btn-default btn-sm worker-btn" data-command="UpdateToolData" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Tool Data</button>
+                    <button type="button" id="room-data" class="btn btn-default btn-sm worker-btn" data-command="UpdateRoomData" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Room Data</button>
+                    <button type="button" id="store-data" class="btn btn-default btn-sm worker-btn" data-command="UpdateStoreData" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Store Data</button>
+                </div>
+
+                <div style="margin-top: 5px;">
+                    <button type="button" id="tool-billing" class="btn btn-default btn-sm worker-btn" data-command="UpdateToolBilling" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Tool Billing</button>
+                    <button type="button" id="room-billing" class="btn btn-default btn-sm worker-btn" data-command="UpdateRoomBilling" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Room Billing</button>
+                    <button type="button" id="store-billing" class="btn btn-default btn-sm worker-btn" data-command="UpdateStoreBilling" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Store Billing</button>
+                </div>
+            </div>
         </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Interlocks</h3>
+            </div>
+            <div class="panel-body compact">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="interlock-resource-id">ResourceID</label>
+                        <div class="col-sm-5">
+                            <input type="text" id="interlock-resource-id" class="form-control" />
+                        </div>
+                    </div>
+                </div>
 
-        <hr />
+                <hr />
 
-        <button type="button" id="tool-data-clean" class="btn btn-default" style="width: 200px;" data-command="UpdateToolDataClean" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Tool Data Clean</button>
-        <button type="button" id="room-data-clean" class="btn btn-default" style="width: 200px;" data-command="UpdateRoomDataClean" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Room Data Clean</button>
-        <button type="button" id="store-data-clean" class="btn btn-default" style="width: 200px;" data-command="UpdateStoreDataClean" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Store Data Clean</button>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="interlock-state" /> State
+                    </label>
+                </div>
 
-        <hr />
-
-        <button type="button" id="tool-data" class="btn btn-default" style="width: 200px;" data-command="UpdateToolData" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Tool Data</button>
-        <button type="button" id="room-data" class="btn btn-default" style="width: 200px;" data-command="UpdateRoomData" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Room Data</button>
-        <button type="button" id="store-data" class="btn btn-default" style="width: 200px;" data-command="UpdateStoreData" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Store Data</button>
-
-        <hr />
-
-        <button type="button" id="tool-billing" class="btn btn-default" style="width: 200px;" data-command="UpdateToolBilling" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Tool Billing</button>
-        <button type="button" id="room-billing" class="btn btn-default" style="width: 200px;" data-command="UpdateRoomBilling" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Room Billing</button>
-        <button type="button" id="store-billing" class="btn btn-default" style="width: 200px;" data-command="UpdateStoreBilling" data-args="{billing-period} {billing-client-id}" data-require="billing-period">Store Billing</button>
+                <div style="margin-top: 5px;"><button type="button" id="interlock-get-state" class="btn btn-default btn-sm worker-btn" data-command="GetWagoState" data-args="{interlock-resource-id}" data-require="interlock-resource-id">Get State</button></div>
+                <div style="margin-top: 5px;"><button type="button" id="interlock-set-state" class="btn btn-default btn-sm worker-btn" data-command="SetWagoState" data-args="{interlock-resource-id} {interlock-state}" data-require="interlock-resource-id">Set State</button></div>
+            </div>
+        </div>
     </div>
 </div>
 
 @section scripts{
+    <script src="~/Scripts/jquery.signalR-2.4.2.min.js"></script>
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+
     <script>
         $("#execute").on("click", function (e) {
             if ($("#command").val()) {
@@ -112,7 +192,7 @@
                 execute(command, args);
             }
         });
-        
+
         $("[data-command]").on("click", function (e) {
             var command = $(this).data("command");
 
@@ -120,7 +200,9 @@
                 "no-email": { "label": "No Email", "value": $("#no-email").prop("checked") },
                 "billing-period": { "label": "Period", "value": $("#billing-period").val() },
                 "billing-client-id": { "label": "ClientID", "value": $("#billing-client-id").val() || 0 },
-                "billing-categories": { "label": "Billing Categories", "value": getBillingCategories().join(",") }
+                "billing-categories": { "label": "Billing Categories", "value": getBillingCategories().join(",") },
+                "interlock-resource-id": { "label": "ResourceID", "value": $("#interlock-resource-id").val() || 0 },
+                "interlock-state": { "label": "State", "value": $("#interlock-state").prop("checked") }
             };
 
             var require = [];
@@ -141,7 +223,9 @@
                     .replace("{no-email}", parameters["no-email"].value)
                     .replace("{billing-period}", parameters["billing-period"].value)
                     .replace("{billing-client-id}", parameters["billing-client-id"].value)
-                    .replace("{billing-categories}", parameters["billing-categories"].value);
+                    .replace("{billing-categories}", parameters["billing-categories"].value)
+                    .replace("{interlock-resource-id}", parameters["interlock-resource-id"].value)
+                    .replace("{interlock-state}", parameters["interlock-state"].value);
 
                 $("#command").val(command + " " + args);
 
@@ -159,7 +243,7 @@
         }
 
         function getAlert(msg, type) {
-            return $("<div/>", { "class": "alert alert-" + type, "role": "alert" }).css({ "margin": "10px 0 0 0" }).html(msg);
+            return $("<div/>", { "class": "alert alert-" + type, "role": "alert" }).css({ "margin": "10px 0 10px 0" }).html(msg);
         }
 
         function execute(command, args) {
@@ -176,5 +260,25 @@
                 $("#output").html(getAlert(err, "danger"))
             });
         }
+
+        /****** SignalR **********************************/
+        var connected = false;
+
+        var workerHub = $.connection.workerHub;
+
+        workerHub.client.broadcast = function (msg) {
+            var $console = $("#console");
+
+            var div = $("<div/>").css("color", msg.Color).html(msg.Text);
+
+            $console.append(div);
+
+            $console.scrollTop($console.prop("scrollHeight"));
+        };
+
+        $.connection.hub.start().done(function () {
+            connected = true;
+        });
+        /*************************************************/
     </script>
 }
