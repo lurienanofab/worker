@@ -124,6 +124,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Global.asax" />
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\Production %28Apps%29.pubxml" />
     <None Include="Scripts\jquery-3.6.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.6.0.js" />
     <Content Include="Scripts\jquery-3.6.0.min.js" />
@@ -153,7 +154,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <None Include="Properties\PublishProfiles\Production %28Apps%29.pubxml" />
     <Content Include="Scripts\jquery-3.6.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.6.0.min.map" />
     <None Include="Web.Debug.config">
